@@ -1,0 +1,50 @@
+steps:
+- id: 'tf init'
+  name: 'hashicorp/terraform:1.0.0'
+  entrypoint: 'sh'
+  args: 
+  - '-c'
+  - terraform init
+  
+# [START tf-plan]
+- id: 'tf plan'
+  name: 'hashicorp/terraform:1.0.0'
+  entrypoint: 'sh'
+  args: 
+  - '-c'
+  - terraform plan
+
+  # [START tf-plan]
+- id: 'tf plan'
+  name: 'hashicorp/terraform:0.11.14'
+  entrypoint: 'sh'
+  args: 
+  - '-c'
+  - | 
+      if [ -d "{$BRANCH_NAME" == "dev" || "{$BRANCH_NAME" == "main"]; then
+        terraform plan
+      else
+        for dir in environments/*/
+        do 
+          echo ""
+          echo "*************** TERRAFOM PLAN ******************"
+          echo "*************************************************"
+          echo "*************************************************"
+        done
+      fi 
+
+# [START tf-apply]
+- id: 'tf apply'
+  name: 'hashicorp/terraform:0.11.14'
+  entrypoint: 'sh'
+  args: 
+  - '-c'
+  - | 
+      if [ -d "$BRANCH_NAME" == "main"]; then     
+        terraform apply -auto-approve
+      else
+        echo "***************************** SKIPPING APPLYING *******************************"
+        echo "*******************************************************************************"
+        echo "*******************************************************************************"
+      fi
+# [END tf-apply]   
